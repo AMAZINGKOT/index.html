@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Idol Sorter</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; }
+        #container { margin-top: 50px; }
+        button { font-size: 20px; margin: 20px; padding: 10px 20px; }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>Idol Sorter</h1>
+        <div id="question"></div>
+        <button id="option1"></button>
+        <button id="option2"></button>
+        <div id="result" style="display: none;">
+            <h2>Sorted Idols:</h2>
+            <ul id="sortedList"></ul>
+        </div>
+    </div>
+
+    <script>
+        const idols = ["원빈이님", "성찬", "은석", "앤톤", "소희", "쇼타로", "료", "사쿠야", "시온", "유우시", "리쿠", "재희"];
+        let comparisons = [];
+        let sortedIdols = [];
+        let currentComparison = 0;
+
+        // Fisher-Yates Shuffle to randomize array
+        function shuffle(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function generateComparisons(array) {
+            const comparisons = [];
+            for (let i = 0; i < array.length; i++) {
+                for (let j = i + 1; j < array.length; j++) {
+                    comparisons.push([array[i], array[j]]);
+                }
+            }
+            return shuffle(comparisons);
+        }
+
+        function startSort() {
+            comparisons = generateComparisons(idols);
+            currentComparison = 0;
+            sortedIdols = [];
+            showComparison();
+        }
+
+        function showComparison() {
+            if (currentComparison >= comparisons.length) {
+                displayResult();
+                return;
+            }
+
+            const [idol1, idol2] = comparisons[currentComparison];
+            document.getElementById('question').innerText = "골라보세용";
+            document.getElementById('option1').innerText = idol1;
+            document.getElementById('option2').innerText = idol2;
+        }
+
+        document.getElementById('option1').addEventListener('click', () => {
+            sortedIdols.push(comparisons[currentComparison][0]);
+            currentComparison++;
+            showComparison();
+        });
+
+        document.getElementById('option2').addEventListener('click', () => {
+            sortedIdols.push(comparisons[currentComparison][1]);
+            currentComparison++;
+            showComparison();
+        });
+
+        function displayResult() {
+            document.getElementById('result').style.display = 'block';
+            const sortedListElement = document.getElementById('sortedList');
+            sortedListElement.innerHTML = '';
+            // Remove duplicates and maintain order
+            sortedIdols = [...new Set(sortedIdols)];
+            sortedIdols.forEach(idol => {
+                const li = document.createElement('li');
+                li.innerText = idol;
+                sortedListElement.appendChild(li);
+            });
+            document.getElementById('question').style.display = 'none';
+            document.getElementById('option1').style.display = 'none';
+            document.getElementById('option2').style.display = 'none';
+        }
+
+        startSort();
+    </script>
+</body>
+</html>
